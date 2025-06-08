@@ -417,7 +417,6 @@
                                 @if (Auth::user()->is_admin ?? false)
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">Painel Admin</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.livros.create') }}">Adicionar Livro</a></li>
                                 @endif
                                 <li><hr class="dropdown-divider"></li>
                                 <li>

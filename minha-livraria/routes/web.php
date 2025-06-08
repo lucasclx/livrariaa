@@ -100,35 +100,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Dashboard
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
     
-    // Gestão de Livros
-    Route::resource('livros', AdminLivroController::class);
-    Route::patch('livros/{livro}/toggle-status', [AdminLivroController::class, 'toggleStatus'])->name('livros.toggle-status');
-    Route::patch('livros/{livro}/toggle-destaque', [AdminLivroController::class, 'toggleDestaque'])->name('livros.toggle-destaque');
-    
-    // Gestão de Categorias
-    Route::resource('categorias', AdminCategoriaController::class);
-    Route::patch('categorias/{categoria}/toggle-status', [AdminCategoriaController::class, 'toggleStatus'])->name('categorias.toggle-status');
-    
-    // Gestão de Pedidos
-    Route::resource('pedidos', AdminPedidoController::class)->only(['index', 'show', 'update']);
-    Route::patch('pedidos/{pedido}/status', [AdminPedidoController::class, 'updateStatus'])->name('pedidos.update-status');
-    
-    // Gestão de Cupons
-    Route::resource('cupons', AdminCupomController::class);
-    Route::patch('cupons/{cupom}/toggle-status', [AdminCupomController::class, 'toggleStatus'])->name('cupons.toggle-status');
-    
-    // Gestão de Avaliações
-    Route::resource('avaliacoes', AdminAvaliacaoController::class)->only(['index', 'show', 'update', 'destroy']);
-    Route::patch('avaliacoes/{avaliacao}/toggle-status', [AdminAvaliacaoController::class, 'toggleStatus'])->name('avaliacoes.toggle-status');
-    
-    // Relatórios
-    Route::prefix('relatorios')->name('relatorios.')->group(function () {
-        Route::get('/', [AdminRelatorioController::class, 'index'])->name('index');
-        Route::get('/vendas', [AdminRelatorioController::class, 'vendas'])->name('vendas');
-        Route::get('/estoque', [AdminRelatorioController::class, 'estoque'])->name('estoque');
-        Route::get('/clientes', [AdminRelatorioController::class, 'clientes'])->name('clientes');
-        Route::get('/avaliacoes', [AdminRelatorioController::class, 'avaliacoes'])->name('avaliacoes');
-    });
 });
 
 /*
