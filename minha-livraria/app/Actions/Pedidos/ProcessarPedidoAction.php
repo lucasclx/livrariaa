@@ -46,7 +46,7 @@ class ProcessarPedidoAction
                 'cidade' => $data['cidade'],
                 'estado' => $data['estado'],
                 'cep' => $data['cep'],
-                'metodo_pagamento' => $data['metodo_pagamento'],
+                'forma_pagamento' => $data['forma_pagamento'],
             ]);
 
             // 3. Mover os itens do carrinho para a tabela de itens do pedido e abater o stock.
