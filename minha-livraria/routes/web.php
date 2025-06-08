@@ -7,6 +7,7 @@ use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\AvaliacaoController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\RecomendacaoController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -158,7 +159,7 @@ Route::prefix('api')->name('api.')->group(function () {
 Route::get('/buscar', [LivroController::class, 'buscar'])->name('livros.buscar');
 
 // Rota para recomendações
-Route::get('/recomendacoes/{livro}', [App\Http\Controllers\RecomendacaoController::class, 'show'])->name('recomendacoes.show');
+Route::get('/recomendacoes/{livro}', [RecomendacaoController::class, 'show'])->name('recomendacoes.show');
 
 // Rota de fallback para páginas não encontradas
 Route::fallback(function () {

@@ -6,6 +6,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Models\PedidoItem;
+use App\Models\Avaliacao;
+use App\Models\Wishlist;
 
 class Livro extends Model
 {
@@ -46,6 +49,21 @@ class Livro extends Model
     public function carrinhoItens()
     {
         return $this->hasMany(CarrinhoItem::class);
+    }
+
+    public function pedidoItens()
+    {
+        return $this->hasMany(PedidoItem::class);
+    }
+
+    public function avaliacoes()
+    {
+        return $this->hasMany(Avaliacao::class);
+    }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
     }
 
     public function getPrecoFinalAttribute()
