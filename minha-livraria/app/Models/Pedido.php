@@ -12,8 +12,9 @@ class Pedido extends Model
 
     protected $fillable = [
         'numero_pedido', 'user_id', 'nome_cliente', 'email_cliente',
-        'telefone_cliente', 'endereco_entrega', 'total', 'status',
-        'forma_pagamento', 'data_entrega'
+        'telefone_cliente', 'endereco_entrega',
+        'cidade', 'estado', 'cep',
+        'total', 'status', 'forma_pagamento', 'data_entrega'
     ];
 
     protected $casts = [

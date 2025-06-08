@@ -27,6 +27,9 @@ class CheckoutTest extends TestCase
             'email_cliente' => 'john@example.com',
             'telefone_cliente' => '123456789',
             'endereco_entrega' => 'Rua Teste, 123',
+            'cidade' => 'Sao Paulo',
+            'estado' => 'SP',
+            'cep' => '12345-678',
             'forma_pagamento' => 'pix',
         ]);
 
