@@ -2,19 +2,39 @@
 
 namespace Tests\Feature;
 
+use App\Models\Livro;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class CheckoutTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
-    {
-        $response = $this->get('/');
+    use RefreshDatabase;
 
-        $response->assertStatus(200);
+    public function test_checkout_creates_order_and_clears_cart(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $livro = Livro::factory()->create();
+
+        $this->post(route('carrinho.adicionar'), [
+            'livro_id' => $livro->id,
+            'quantidade' => 1,
+        ]);
+
+        $response = $this->post(route('checkout.processar'), [
+            'nome_cliente' => 'John Doe',
+            'email_cliente' => 'john@example.com',
+            'telefone_cliente' => '123456789',
+            'endereco_entrega' => 'Rua Teste, 123',
+            'forma_pagamento' => 'pix',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('pedidos', [
+            'email_cliente' => 'john@example.com',
+            'total' => $livro->preco,
+        ]);
+        $this->assertDatabaseCount('carrinhos', 0);
     }
 }
