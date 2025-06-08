@@ -45,9 +45,11 @@ class CarrinhoController extends Controller
     /**
      * Adiciona um livro ao carrinho.
      */
-    public function adicionar(Request $request, Livro $livro)
+    public function adicionar(Request $request)
     {
         $carrinho = $this->getOrCreateCarrinho();
+
+        $livro = Livro::findOrFail($request->input('livro_id'));
 
         // Verifica se o item já existe no carrinho
         $item = $carrinho->items()->where('livro_id', $livro->id)->first();
