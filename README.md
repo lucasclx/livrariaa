@@ -66,3 +66,7 @@ At minimum the following variables must be configured in your `.env` file:
 
 Refer to `.env.example` for the complete list of options.
 
+
+## License
+
+This project is licensed under the [MIT](LICENSE) license.
