@@ -5,10 +5,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Livro;
 use App\Models\Categoria;
+use App\Services\RecomendacaoService;
 use Illuminate\Http\Request;
 
 class LivroController extends Controller
 {
+    private RecomendacaoService $recomendacaoService;
+
+    public function __construct(RecomendacaoService $recomendacaoService)
+    {
+        $this->recomendacaoService = $recomendacaoService;
+    }
+
     public function index(Request $request)
     {
         $query = Livro::with('categoria')->ativo();
@@ -64,14 +72,7 @@ class LivroController extends Controller
     {
         $livro = Livro::with('categoria')->where('slug', $slug)->ativo()->firstOrFail();
         
-        // Livros relacionados da mesma categoria
-        $livrosRelacionados = Livro::with('categoria')
-            ->where('categoria_id', $livro->categoria_id)
-            ->where('id', '!=', $livro->id)
-            ->ativo()
-            ->inRandomOrder()
-            ->limit(4)
-            ->get();
+        $livrosRelacionados = $this->recomendacaoService->recomendar($livro, auth()->user());
 
         return view('livros.show', compact('livro', 'livrosRelacionados'));
     }
