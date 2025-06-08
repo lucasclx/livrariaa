@@ -1,0 +1,143 @@
+        /* Estilo customizado para a livraria */
+        .page-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        .book-card {
+            transition: transform 0.2s ease-in-out;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .book-cover img {
+            transition: transform 0.3s ease;
+        }
+        
+        .book-card:hover .book-cover img {
+            transform: scale(1.05);
+        }
+        
+        .badge-category {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-elegant {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+        
+        .btn-elegant:hover {
+            background: linear-gradient(45deg, #5a6fd8 0%, #6a4190 100%);
+            color: white;
+        }
+        
+        .btn-outline-elegant {
+            border: 2px solid #667eea;
+            color: #667eea;
+            background: transparent;
+        }
+        
+        .btn-outline-elegant:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-gold {
+            background: linear-gradient(45deg, #f39c12 0%, #d68910 100%);
+            border: none;
+            color: white;
+        }
+        
+        .btn-gold:hover {
+            background: linear-gradient(45deg, #e67e22 0%, #ca6f1e 100%);
+            color: white;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .filter-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+        }
+        
+        .price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .floating-book {
+            transition: transform 0.3s ease;
+        }
+        
+        .floating-book:hover {
+            transform: translateY(-3px);
+        }
+        
+        /* Badges de estoque */
+        .badge-stock-ok {
+            background-color: #27ae60;
+        }
+        
+        .badge-stock-low {
+            background-color: #f39c12;
+        }
+        
+        .badge-stock-out {
+            background-color: #e74c3c;
+        }
+        
+        /* Loading animation */
+        .loading-books {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Navbar customizada */
+        .navbar-elegant {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-elegant .navbar-brand,
+        .navbar-elegant .nav-link {
+            color: white !important;
+        }
+        
+        .navbar-elegant .nav-link:hover {
+            color: rgba(255,255,255,0.8) !important;
+        }
+        
+        /* Footer */
+        .footer-elegant {
+            background: #2c3e50;
+            color: white;
+            margin-top: 3rem;
+        }
