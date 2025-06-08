@@ -2,19 +2,21 @@
 
 namespace Tests\Feature;
 
+use App\Models\Livro;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class LivroTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
+    use RefreshDatabase;
+
+    public function test_book_listing_displays_books(): void
     {
-        $response = $this->get('/');
+        $livro = Livro::factory()->create();
+
+        $response = $this->get('/livros');
 
         $response->assertStatus(200);
+        $response->assertSee($livro->titulo);
     }
 }
