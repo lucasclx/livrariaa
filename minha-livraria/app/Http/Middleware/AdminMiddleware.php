@@ -15,6 +15,19 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Verificar se o usuário está autenticado
+        if (!auth()->check()) {
+            return redirect()->route('login')
+                ->with('error', 'Você precisa estar logado para acessar esta área.');
+        }
+
+        // Verificar se o usuário é admin
+        // Por enquanto, vamos usar um campo 'is_admin' na tabela users
+        // ou você pode usar um sistema de roles mais complexo
+        if (!auth()->user()->is_admin) {
+            abort(403, 'Acesso negado. Você não tem permissão para acessar esta área.');
+        }
+
         return $next($request);
     }
 }

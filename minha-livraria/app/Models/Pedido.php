@@ -52,4 +52,21 @@ class Pedido extends Model
 
         return $status[$this->status] ?? ['classe' => 'secondary', 'texto' => 'Desconhecido'];
     }
+
+    public function getTotalItensAttribute()
+    {
+        return $this->itens->sum('quantidade');
+    }
+
+    public function getFormaPagamentoFormattedAttribute()
+    {
+        $formas = [
+            'cartao_credito' => 'Cartão de Crédito',
+            'cartao_debito' => 'Cartão de Débito',
+            'pix' => 'PIX',
+            'boleto' => 'Boleto Bancário'
+        ];
+
+        return $formas[$this->forma_pagamento] ?? $this->forma_pagamento;
+    }
 }
