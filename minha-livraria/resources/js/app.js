@@ -1,4 +1,5 @@
 import './bootstrap';
+import 'bootstrap'; // <--- ADICIONE ESTA LINHA
 
 import Alpine from 'alpinejs';
 
