@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('email_cliente');
             $table->string('telefone_cliente');
             $table->text('endereco_entrega');
+            $table->string('cidade');
+            $table->string('estado', 2);
+            $table->string('cep', 9);
             $table->decimal('total', 10, 2);
             $table->enum('status', ['pendente', 'processando', 'enviado', 'entregue', 'cancelado'])->default('pendente');
             $table->enum('forma_pagamento', ['cartao_credito', 'cartao_debito', 'pix', 'boleto']);
