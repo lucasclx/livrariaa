@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Carrinho;
 use App\Mail\PedidoConfirmado;
 use Illuminate\Support\Facades\Mail;
-use App\Http\Requests\CheckoutReques; // Note: O nome do seu arquivo é "Reques.php"
+use App\Http\Requests\CheckoutRequets; 
 use App\Actions\Pedidos\ProcessarPedidoAction; // Importa a nova Ação
 
 class CheckoutController extends Controller
