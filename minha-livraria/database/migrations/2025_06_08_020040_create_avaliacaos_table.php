@@ -13,7 +13,17 @@ return new class extends Migration
     {
         Schema::create('avaliacaos', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('livro_id')->constrained('livros')->onDelete('cascade');
+            $table->unsignedTinyInteger('rating');
+            $table->text('comentario')->nullable();
+            $table->enum('status', ['pendente', 'aprovado', 'rejeitado'])->default('pendente');
+
             $table->timestamps();
+
+            // Índices adicionais para consultas frequentes
+            $table->index(['livro_id', 'status']);
         });
     }
 
