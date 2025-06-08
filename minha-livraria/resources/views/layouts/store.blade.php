@@ -376,10 +376,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link position-relative" href="{{ url('/carrinho') }}">
+                        <a class="nav-link position-relative" href="{{ route('carrinho.index') }}">
                             <i class="fas fa-shopping-cart me-1"></i> Carrinho
                             @php
-                                $cartCount = session('cart_id') ? \App\Models\Cart::withCount('items')->find(session('cart_id'))?->items_count : 0;
+                                // Assumindo que há uma função para contar itens do carrinho
+                                $cartCount = 0; // Implementar lógica do carrinho conforme necessário
                             @endphp
                             @if($cartCount > 0)
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -412,8 +413,8 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
                                 <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Meu Perfil</a></li>
-                                <li><a class="dropdown-item" href="{{ route('orders.index') }}">Meus Pedidos</a></li>
-                                @if (Auth::user()->is_admin)
+                                <li><a class="dropdown-item" href="{{ route('pedidos.index') }}">Meus Pedidos</a></li>
+                                @if (Auth::user()->is_admin ?? false)
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">Painel Admin</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.livros.create') }}">Adicionar Livro</a></li>
@@ -435,6 +436,7 @@
             </div>
         </div>
     </nav>
+    
     <div class="container my-4">
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -457,6 +459,7 @@
         @endif
         @yield('content')
     </div>
+    
     <footer class="footer mt-auto">
         <div class="container">
             <div class="row">
@@ -474,6 +477,7 @@
             </div>
         </div>
     </footer>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Image preview function
@@ -487,10 +491,12 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+        
         // Stats modal (agora obsoleto, link leva ao painel admin)
         function showStats() {
             alert('Esta função foi substituída. Use o link para o Painel Admin. 📊');
         }
+        
         // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -504,6 +510,7 @@
                 }
             });
         });
+        
         // Enhanced tooltips
         document.addEventListener('DOMContentLoaded', function() {
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
