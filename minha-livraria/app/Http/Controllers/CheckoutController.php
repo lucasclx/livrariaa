@@ -3,103 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Models\Carrinho;
-use App\Models\Pedido;
-use App\Models\PedidoItem;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Mail\PedidoConfirmado;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\CheckoutReques; // Note: O nome do seu arquivo é "Reques.php"
+use App\Actions\Pedidos\ProcessarPedidoAction; // Importa a nova Ação
 
 class CheckoutController extends Controller
 {
+    /**
+     * Exibe a página de checkout com os itens do carrinho.
+     */
     public function index()
     {
-        $carrinho = null;
-        $itens = collect();
-        
-        if (session('cart_id')) {
-            $carrinho = Carrinho::with(['itens.livro.categoria'])->find(session('cart_id'));
-            $itens = $carrinho ? $carrinho->itens : collect();
+        $carrinho = Carrinho::where('user_id', auth()->id())->with('items.livro')->first();
+
+        if (!$carrinho || $carrinho->items->isEmpty()) {
+            return redirect()->route('livros.index')->with('info', 'O seu carrinho está vazio.');
         }
-        
-        if (!$carrinho || $itens->isEmpty()) {
-            return redirect()->route('carrinho.index')
-                ->with('error', 'Seu carrinho está vazio. Adicione alguns livros antes de finalizar a compra.');
-        }
-        
-        return view('checkout.index', compact('carrinho', 'itens'));
+
+        return view('checkout.index', compact('carrinho'));
     }
-    
-    public function processar(Request $request)
+
+    /**
+     * Processa a finalização da compra.
+     * A lógica foi movida para a classe ProcessarPedidoAction.
+     */
+    public function processar(CheckoutReques $request, ProcessarPedidoAction $action)
     {
-        $request->validate([
-            'nome_cliente' => 'required|string|max:255',
-            'email_cliente' => 'required|email|max:255',
-            'telefone_cliente' => 'required|string|max:20',
-            'endereco_entrega' => 'required|string|max:500',
-            'forma_pagamento' => 'required|in:cartao_credito,cartao_debito,pix,boleto',
-        ]);
-        
-        $carrinho = null;
-        if (session('cart_id')) {
-            $carrinho = Carrinho::with(['itens.livro'])->find(session('cart_id'));
-        }
-        
-        if (!$carrinho || $carrinho->itens->isEmpty()) {
-            return redirect()->route('carrinho.index')
-                ->with('error', 'Carrinho vazio ou não encontrado.');
-        }
-        
-        // Verificar estoque
-        foreach ($carrinho->itens as $item) {
-            if ($item->livro->estoque < $item->quantidade) {
-                return back()->with('error', "Produto '{$item->livro->titulo}' não possui estoque suficiente.");
-            }
-        }
-        
-        DB::beginTransaction();
-        
         try {
-            // Criar pedido
-            $pedido = Pedido::create([
-                'user_id' => auth()->id(),
-                'nome_cliente' => $request->nome_cliente,
-                'email_cliente' => $request->email_cliente,
-                'telefone_cliente' => $request->telefone_cliente,
-                'endereco_entrega' => $request->endereco_entrega,
-                'total' => $carrinho->total,
-                'forma_pagamento' => $request->forma_pagamento,
-                'status' => 'pendente'
-            ]);
-            
-            // Criar itens do pedido e atualizar estoque
-            foreach ($carrinho->itens as $item) {
-                PedidoItem::create([
-                    'pedido_id' => $pedido->id,
-                    'livro_id' => $item->livro_id,
-                    'quantidade' => $item->quantidade,
-                    'preco_unitario' => $item->preco_unitario,
-                    'subtotal' => $item->subtotal
-                ]);
-                
-                // Reduzir estoque
-                $item->livro->decrement('estoque', $item->quantidade);
-            }
-            
-            // Limpar carrinho
-            $carrinho->itens()->delete();
-            $carrinho->delete();
-            session()->forget('cart_id');
-            
-            DB::commit();
-            
-            // Enviar email de confirmação (implementar depois)
-            // Mail::to($pedido->email_cliente)->send(new PedidoConfirmado($pedido));
-            
-            return redirect()->route('pedidos.sucesso', $pedido)
-                ->with('success', 'Pedido realizado com sucesso!');
-                
+            // Delega toda a lógica complexa para a Ação.
+            $pedido = $action->execute(auth()->user(), $request->validated());
+
+            // Enviar e-mail de confirmação (pode ser movido para uma Job no futuro)
+            Mail::to(auth()->user()->email)->send(new PedidoConfirmado($pedido));
+
+            // Redireciona para uma página de sucesso com os detalhes do pedido.
+            return redirect()->route('pedidos.show', $pedido->id)
+                             ->with('success', 'Pedido realizado com sucesso! Um e-mail de confirmação foi enviado.');
+
         } catch (\Exception $e) {
-            DB::rollback();
-            return back()->with('error', 'Erro ao processar pedido. Tente novamente.');
+            // Se a Ação lançar qualquer exceção (ex: falta de stock), captura aqui.
+            return redirect()->route('carrinho.index')
+                             ->withErrors(['critical' => $e->getMessage()]);
         }
     }
 }

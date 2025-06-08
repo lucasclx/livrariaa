@@ -1,118 +1,101 @@
 <?php
-// app/Http/Controllers/CarrinhoController.php
 
 namespace App\Http\Controllers;
 
-use App\Models\Carrinho;
-use App\Models\CarrinhoItem;
 use App\Models\Livro;
+use App\Models\Carrinho;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth; // Importar a facade Auth
 
 class CarrinhoController extends Controller
 {
-    private function getOrCreateCarrinho()
+    /**
+     * Método privado para obter ou criar o carrinho do utilizador.
+     * Agora, lida com utilizadores autenticados (via user_id) e
+     * visitantes (via session_id).
+     *
+     * @return Carrinho
+     */
+    private function getOrCreateCarrinho(): Carrinho
     {
-        $sessionId = Session::getId();
-        $userId = auth()->id();
-
-        $carrinho = Carrinho::where('session_id', $sessionId)->first();
-
-        if (!$carrinho) {
-            $carrinho = Carrinho::create([
-                'session_id' => $sessionId,
-                'user_id' => $userId
-            ]);
+        if (Auth::check()) {
+            // Cenário 1: Utilizador está autenticado.
+            // O carrinho é identificado pelo user_id.
+            $carrinho = Carrinho::firstOrCreate(['user_id' => Auth::id()]);
+        } else {
+            // Cenário 2: Utilizador é um visitante.
+            // O carrinho é identificado pelo ID da sessão atual.
+            $carrinho = Carrinho::firstOrCreate(['session_id' => session()->getId()]);
         }
-
-        session(['cart_id' => $carrinho->id]);
 
         return $carrinho;
     }
 
+    /**
+     * Exibe os itens no carrinho de compras.
+     */
     public function index()
     {
-        $carrinho = null;
-        $itens = collect();
+        // Usamos o eager loading para carregar os livros e evitar o problema de N+1 queries.
+        $carrinho = $this->getOrCreateCarrinho()->load('items.livro');
 
-        if (session('cart_id')) {
-            $carrinho = Carrinho::with(['itens.livro.categoria'])->find(session('cart_id'));
-            $itens = $carrinho ? $carrinho->itens : collect();
-        }
-
-        return view('carrinho.index', compact('carrinho', 'itens'));
+        return view('carrinho.index', compact('carrinho'));
     }
 
-    public function adicionar(Request $request)
+    /**
+     * Adiciona um livro ao carrinho.
+     */
+    public function adicionar(Request $request, Livro $livro)
     {
-        $request->validate([
-            'livro_id' => 'required|exists:livros,id',
-            'quantidade' => 'required|integer|min:1'
-        ]);
-
-        $livro = Livro::findOrFail($request->livro_id);
-
-        if ($livro->estoque < $request->quantidade) {
-            return back()->with('error', 'Quantidade solicitada não disponível em estoque.');
-        }
-
         $carrinho = $this->getOrCreateCarrinho();
 
-        $itemExistente = CarrinhoItem::where('carrinho_id', $carrinho->id)
-            ->where('livro_id', $livro->id)
-            ->first();
+        // Verifica se o item já existe no carrinho
+        $item = $carrinho->items()->where('livro_id', $livro->id)->first();
 
-        if ($itemExistente) {
-            $novaQuantidade = $itemExistente->quantidade + $request->quantidade;
-            
-            if ($livro->estoque < $novaQuantidade) {
-                return back()->with('error', 'Quantidade total solicitada excede o estoque disponível.');
-            }
-
-            $itemExistente->update(['quantidade' => $novaQuantidade]);
+        if ($item) {
+            // Se existe, incrementa a quantidade
+            $item->increment('quantidade', $request->input('quantidade', 1));
         } else {
-            CarrinhoItem::create([
-                'carrinho_id' => $carrinho->id,
+            // Se não existe, cria um novo item
+            $carrinho->items()->create([
                 'livro_id' => $livro->id,
-                'quantidade' => $request->quantidade,
-                'preco_unitario' => $livro->preco_final
+                'quantidade' => $request->input('quantidade', 1),
+                'preco_unitario' => $livro->preco, // Grava o preço no item do carrinho
             ]);
         }
 
-        return back()->with('success', 'Livro adicionado ao carrinho com sucesso!');
+        return redirect()->route('carrinho.index')->with('success', 'Livro adicionado ao carrinho!');
     }
 
-    public function atualizar(Request $request, CarrinhoItem $item)
+    /**
+     * Remove um item do carrinho.
+     */
+    public function remover($itemId)
     {
-        $request->validate([
-            'quantidade' => 'required|integer|min:1'
-        ]);
-
-        if ($item->livro->estoque < $request->quantidade) {
-            return back()->with('error', 'Quantidade solicitada não disponível em estoque.');
-        }
-
-        $item->update(['quantidade' => $request->quantidade]);
-
-        return back()->with('success', 'Quantidade atualizada com sucesso!');
-    }
-
-    public function remover(CarrinhoItem $item)
-    {
+        $carrinho = $this->getOrCreateCarrinho();
+        $item = $carrinho->items()->findOrFail($itemId);
         $item->delete();
 
-        return back()->with('success', 'Item removido do carrinho.');
+        return redirect()->route('carrinho.index')->with('success', 'Item removido do carrinho.');
     }
 
-    public function limpar()
+    /**
+     * Atualiza a quantidade de um item no carrinho.
+     */
+    public function atualizar(Request $request, $itemId)
     {
-        if (session('cart_id')) {
-            $carrinho = Carrinho::find(session('cart_id'));
-            if ($carrinho) {
-                $carrinho->itens()->delete();
-            }
+        $carrinho = $this->getOrCreateCarrinho();
+        $item = $carrinho->items()->findOrFail($itemId);
+        
+        $quantidade = $request->input('quantidade');
+
+        if ($quantidade > 0) {
+            $item->update(['quantidade' => $quantidade]);
+        } else {
+            // Se a quantidade for 0 ou menos, remove o item
+            $item->delete();
         }
 
-        return back()->with('success', 'Carrinho limpo com sucesso!');
+        return redirect()->route('carrinho.index')->with('success', 'Carrinho atualizado.');
     }
 }
