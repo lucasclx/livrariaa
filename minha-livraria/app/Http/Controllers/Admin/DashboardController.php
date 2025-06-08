@@ -265,8 +265,7 @@ class DashboardController extends Controller
                 'tipo' => 'warning',
                 'titulo' => 'Estoque Baixo',
                 'mensagem' => "{$estoqueBaixo} livro(s) com estoque baixo",
-                'icone' => 'fas fa-exclamation-triangle',
-                'acao' => route('admin.livros.index', ['filtro' => 'estoque_baixo'])
+                'icone' => 'fas fa-exclamation-triangle'
             ];
         }
 
@@ -278,8 +277,7 @@ class DashboardController extends Controller
                 'tipo' => 'info',
                 'titulo' => 'Avaliações Pendentes',
                 'mensagem' => "{$avaliacoesPendentes} avaliação(ões) aguardando moderação",
-                'icone' => 'fas fa-star',
-                'acao' => route('admin.avaliacoes.index', ['status' => 'pendente'])
+                'icone' => 'fas fa-star'
             ];
         }
 
@@ -293,8 +291,7 @@ class DashboardController extends Controller
                 'tipo' => 'warning',
                 'titulo' => 'Pedidos Pendentes',
                 'mensagem' => "{$pedidosPendentes} pedido(s) pendente(s) nas últimas 24h",
-                'icone' => 'fas fa-clock',
-                'acao' => route('admin.pedidos.index', ['status' => 'pendente'])
+                'icone' => 'fas fa-clock'
             ];
         }
 
@@ -308,8 +305,7 @@ class DashboardController extends Controller
                 'tipo' => 'warning',
                 'titulo' => 'Livros sem Categoria',
                 'mensagem' => "{$livrosSemCategoria} livro(s) sem categoria definida",
-                'icone' => 'fas fa-tags',
-                'acao' => route('admin.livros.index', ['filtro' => 'sem_categoria'])
+                'icone' => 'fas fa-tags'
             ];
         }
 
