@@ -49,6 +49,8 @@ Route::prefix('carrinho')->name('carrinho.')->group(function () {
 Route::prefix('checkout')->name('checkout.')->group(function () {
     Route::get('/', [CheckoutController::class, 'index'])->name('index');
     Route::post('/processar', [CheckoutController::class, 'processar'])->name('processar');
+    Route::post('/aplicar-cupom', [CheckoutController::class, 'aplicarCupom'])->name('aplicarCupom');
+    Route::post('/remover-cupom', [CheckoutController::class, 'removerCupom'])->name('removerCupom');
 });
 
 // Newsletter
